@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--<link rel="stylesheet" href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css">-->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css">
+    <link rel="stylesheet" href="/dataTables.bootstrap.css">
+</head>
+<body>
+<div class="box">
+    <div class="box-header with-border">
+        <button type="button" class="btn btn-info" >增加12条数据</button>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <table id="appTable" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th>操作</th>
+                <th>名称</th>
+                <th>地址</th>
+                <th>关键字</th>
+                <th>描述</th>
+                <th>热度</th>
+                <th>添加日期</th>
+                <th>更新时间</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+        </table>
+    </div><!-- /.box-body -->
+</div>
+<script src="/jQuery-2.1.4.min.js"></script>
+<script src="/jquery.dataTables.js"></script>
+<script src="/dataTables.bootstrap.min.js"></script>
+<script src="/jquery.spring-friendly.js"></script>
+<script>
+    $().ready(function () {
+        $('#appTable').DataTable({
+            ajax: '/all',
+            serverSide: true,
+            order: [
+                [8, 'desc']//更新时间倒序
+            ],
+            columns: [{
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return "<td><input type='checkbox' name='allocated' value='" + row.id + "'></td>";
+                }
+            }, {
+                data: '',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return "<td><button type='button' class='btn btn-primary btn-sm' onclick='editApp(" + row.id + ")'>编辑</button> &nbsp;" +
+//                            "<button type='button' class='btn btn-info btn-sm' onclick='detail("+row.id+")'>详情</button>" +
+                            "&nbsp;<button type='button' class='btn btn-warning btn-sm' onclick='deleteSingle("+row.id+")'>删除</button>" +
+                            "</td>";
+                }
+            }, {
+                data: 'name'
+            }, {
+                data: 'url',
+                render: function (data, type, row) {
+                    var shortUrl;
+                    if(data.length<30){
+                        shortUrl = data ;
+                    } else {
+                        shortUrl = data.substring(0,30)+"...";
+                    }
+                    return "<a href='" + data + "' target='_blank'>"+shortUrl+"</a>";
+                }
+            }, {
+                data: 'keywords'
+            }, {
+                data: 'description'
+            }, {
+                data: 'hot'
+            }, {
+                data: 'createTime'
+            }, {
+                data: 'updateTime'
+            }, {
+                data: 'disabled',
+                render: function (data, type, row) {
+                    if (row.disabled) {
+                        return "<input type='checkbox' name='state-checkbox' value='" + row.id + "'>";
+                    } else {
+                        return "<input type='checkbox' name='state-checkbox' value='" + row.id + "' checked>";
+                    }
+                }
+            }]
+//            initComplete: function () {
+//                $("input[name='state-checkbox']").bootstrapSwitch();
+//            },
+//            drawCallback: function() {//Function that is called every time DataTables performs a draw.
+//                $("input[name='state-checkbox']").bootstrapSwitch();
+//            }
+
+
+        });
+    });
+    
+    $("button").on("click", function () {
+        $.get("init")
+                .success(function (data) {
+                    window.location="/";
+                });
+    });
+</script>
+</body>
+</html>
